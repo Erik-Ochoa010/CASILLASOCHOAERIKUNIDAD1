@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ayuda - GameThreads</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}"> <!-- Estilo general -->
+    <link rel="stylesheet" href="{% static 'core/css/bosserver.css' %}"> <!-- Estilo específico -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <header class="top-bar">
+        <div class="profile-menu">
+            <i class="fas fa-user-circle profile-icon" id="profileIcon"></i>
+            <ul class="dropdown-menu" id="dropdownMenu">
+                {% if user.is_authenticated %}
+                    <li><a href="#">Perfil</a></li>
+                    <li><a href="#">Configuración</a></li>
+                    <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'register' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <h1>Centro de Ayuda</h1>
+
+        <ul class="help-options">
+            <li><a href="{% url 'faq' %}">❓ Preguntas frecuentes</a></li>
+            <li><a href="{% url 'contacto' %}">📬 Contáctanos</a></li>
+            <li><a href="{% url 'recuperacion' %}">🔑 Recuperación de cuenta</a></li>
+            <li><a href="{% url 'mapa_sitio' %}">🗺️ Mapa del sitio</a></li>
+        </ul>
+    </main>
+
+    <!-- Menú inferior -->
+    <nav class="bottom-nav">
+        <a href="{% url 'index' %}" title="Inicio"><i class="fas fa-home"></i></a>
+        <a href="#" title="Buscar"><i class="fas fa-search"></i></a>
+        <a href="#" title="Notificaciones"><i class="fas fa-heart"></i></a>
+        <a href="#" title="Mensajes"><i class="fas fa-comment-dots"></i></a>
+    </nav>
+
+    <!-- Script para desplegar menú -->
+    <script>
+        const profileIcon = document.getElementById('profileIcon');
+        const profileMenu = document.querySelector('.profile-menu');
+
+        profileIcon.addEventListener('click', () => {
+            profileMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

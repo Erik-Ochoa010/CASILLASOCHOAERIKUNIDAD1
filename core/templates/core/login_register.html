@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login y Registro</title>
+
+    <!-- Fuentes y estilos -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/assets/css/estilos.css' %}">
+</head>
+<body>
+
+    <main>
+
+        <div class="contenedor__todo">
+
+            <!-- CAJAS TRASERAS -->
+            <div class="caja__trasera">
+                <div class="caja__trasera-login">
+                    <h3>¿Ya tienes una cuenta?</h3>
+                    <p>Inicia sesión para entrar en la página</p>
+                    <button id="btn__iniciar-sesion" type="button">Iniciar Sesión</button>
+                    <button type="button" onclick="location.href='{% url 'index' %}'" class="boton">Regresar al Lobby</button>
+                </div>
+                <div class="caja__trasera-register">
+                    <h3>¿Aún no tienes una cuenta?</h3>
+                    <p>Regístrate para que puedas iniciar sesión</p>
+                    <button id="btn__registrarse" type="button">Registrarse</button>
+                    <button type="button" onclick="location.href='{% url 'index' %}'" class="boton">Regresar al Lobby</button>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR FORMULARIOS -->
+            <div class="contenedor__login-register">
+
+                <!-- FORMULARIO LOGIN -->
+                <form action="{% url 'login' %}" method="POST" class="formulario__login" id="form-login" autocomplete="off">
+                    {% csrf_token %}
+                    <h2>Iniciar Sesión</h2>
+                    <input type="text" name="username" placeholder="Usuario" required>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                    <button type="submit">Entrar</button>
+                </form>
+
+                <!-- FORMULARIO REGISTRO -->
+                <form action="{% url 'register' %}" method="POST" class="formulario__register" id="form-register" autocomplete="off">
+                    {% csrf_token %}
+                    <h2>Registrarse</h2>
+
+                    <input type="text" name="first_name" placeholder="Nombre completo" value="{{ form.first_name.value|default_if_none:'' }}" required>
+                    <input type="email" name="email" placeholder="Correo electrónico" value="{{ form.email.value|default_if_none:'' }}" required>
+                    <input type="text" name="username" placeholder="Usuario" value="{{ form.username.value|default_if_none:'' }}" required>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                    <input type="password" name="confirm_password" placeholder="Confirmar contraseña" required>
+
+                    <button type="submit">Registrarse</button>
+                </form>
+
+            </div>
+        </div>
+
+        
+
+        <!-- ERRORES DEL FORMULARIO -->
+        {% if form.errors %}
+            <div class="mensajes">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert">{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </main>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Script personalizado -->
+    <script src="{% static 'core/assets/js/script.js' %}"></script>
+
+</body>
+</html>

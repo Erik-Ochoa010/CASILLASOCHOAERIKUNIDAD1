@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Amigos - GameThreads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'core/css/amigos.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+   <!-- Menú inferior estilo Threads -->
+    <nav class="bottom-nav">
+    <a href="{% url 'index' %}" title="Inicio"><i class="fas fa-home"></i></a>
+    <a href="#" title="Buscar"><i class="fas fa-search"></i></a>
+    <a href="404.html" title="Publicar" class="publish-btn"><i class="fas fa-plus"></i></a>
+    <a href="#" title="Notificaciones"><i class="fas fa-heart"></i></a>
+    <a href="{% url 'amigos' %}" title="Mensajes"><i class="fas fa-comment-dots"></i></a>
+</nav>
+
+  <div class="messenger-layout">
+    <!-- Barra lateral izquierda -->
+    <aside class="sidebar">
+      <div class="tabs">
+        <div class="tab active" data-tab="buscar"><i class="fas fa-search"></i> Buscar</div>
+        <div class="tab" data-tab="amigos"><i class="fas fa-user-friends"></i> Amigos</div>
+        <div class="tab" data-tab="agregar"><i class="fas fa-user-plus"></i> Agregar</div>
+      </div>
+
+      <div class="tab-content active" id="buscar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar usuarios..." autocomplete="off" />
+        <div id="searchResults" class="results-container">
+          <p>Empieza a escribir para buscar usuarios.</p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="amigos">
+        {% if friends %}
+          <div class="friends-list">
+            {% for friend in friends %}
+            <div class="friend-item" data-username="{{ friend.friend.username }}">
+              <span class="friend-name">{{ friend.friend.username }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No tienes amigos aún. ¡Agrega algunos!</p>
+        {% endif %}
+      </div>
+
+      <div class="tab-content" id="solicitudes">
+  <h3>Solicitudes recibidas</h3>
+  {% if received_requests %}
+    <div class="requests-list">
+      {% for req in received_requests %}
+        <div class="request-item">
+          <span>{{ req.from_user.username }}</span>
+          <form method="post" action="{% url 'accept_request' req.id %}">
+            {% csrf_token %}
+            <button type="submit">Aceptar</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No tienes solicitudes pendientes.</p>
+  {% endif %}
+</div>
+
+
+      <div class="tab-content" id="agregar">
+        <form method="post" action="{% url 'add_friend' %}" class="add-friend-form">
+          {% csrf_token %}
+          <input type="text" name="username" placeholder="Nombre de usuario" required class="friend-input" autocomplete="off" />
+          <button type="submit" class="btn-add">Agregar</button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Panel central de chat -->
+    <main class="chat-panel">
+      <div class="chat-header">
+        <h2>Selecciona un amigo para chatear</h2>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <!-- Aquí se mostrarán los mensajes con AJAX o en futuro -->
+      </div>
+
+      <!-- Formulario enviar mensaje -->
+      <form method="post" action="#" id="sendMessageForm" class="send-message-form" style="display: none;">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Escribe un mensaje..." required />
+        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        contents.forEach(c => c.classList.remove('active'));
+        const target = tab.getAttribute('data-tab');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      if (!query) {
+        searchResults.innerHTML = '<p>Empieza a escribir para buscar usuarios.</p>';
+        return;
+      }
+      searchResults.innerHTML = `<p>Buscando "<strong>${query}</strong>"...</p>`;
+    });
+
+    // Mostrar formulario de mensajes cuando se selecciona un amigo
+    const friendItems = document.querySelectorAll('.friend-item');
+    const chatHeader = document.querySelector('.chat-header');
+    const sendMessageForm = document.getElementById('sendMessageForm');
+
+    friendItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const username = item.getAttribute('data-username');
+        chatHeader.innerHTML = `<h2>Chat con ${username}</h2>`;
+        sendMessageForm.style.display = 'flex';
+      });
+    });
+  </script>
+</body>
+</html>
